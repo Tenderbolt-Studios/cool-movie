@@ -5,7 +5,6 @@
     <script src="https://cdn.plyr.io/1.8.2/plyr.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script>
     <link rel="stylesheet" href="https://cdn.plyr.io/1.8.2/plyr.css">
-    <script src="https://cdn.jsdelivr.net/npm/webvtt-polyfill@0.5.10/dist/webvtt.min.js"></script>
     <style>
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;700&display=swap');
 html,body{
@@ -411,7 +410,7 @@ function addVideoTracks(tracks) {
 function play(hls) {
   var video = document.querySelector('#video');
   if (Hls.isSupported()) {
-    hls.loadSource('https://s3.putgate.org/cdn/H4sIAAAAAAAAAwXB226DIAAA0F.CVYxZsodZpLUTXLWI441LCQF0bbP0wtfvHFdVqtIFRMCVyCJkwJsuXWUcOgPj1PldLr7VXF7kvgVjqqkg7MrjZdHC42keirEhwJCEOxBfdvNZ0JNfVdMCk2umI.r4hszH1ROOCRnj4coE_FZRbkVoX2L3HFSoGx3sLFPNzOIhDbIbMr8xOCmLU8myf35lepO5uffYl9NM0ggPKz2Zot.R0PPfB13gn93_fPwDs0PNtM0AAAA-/list.m3u8');
+    hls.loadSource('https://yot.gnicirp.com/_v10/72b43d2906ed8cb29a615f5968874e2632dd9187d08bc30e221fcad1d926954855a0fdc993814b5e1d1ffb724c171ffb3a70cc119a03bedef981ed0eecb2a13a28fb8f33b702799c01dd5818c553403c9345d5e446e38c05df2a058a33e0fcd3049c403afd11c58914a7d097f923b21dd25e1430e7cd1c7f26baf133e1008a5ff6365d6bad3f2ac046fc0d26bd8368d0/playlist.m3u8');
     hls.attachMedia(video);
     hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
       const videoResolutions = data.levels.map(level => level.height + 'p');
