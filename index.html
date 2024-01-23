@@ -1,0 +1,438 @@
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+    <script src="https://cdn.plyr.io/1.8.2/plyr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script>
+    <link rel="stylesheet" href="https://cdn.plyr.io/1.8.2/plyr.css">
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;700&display=swap');
+html,body{
+  margin:0px;
+  height:100%;
+  width:100%;
+  font-family: 'Lexend', sans-serif;
+}
+body{
+  background:#121212;
+}
+header{
+  font-size: 1.3rem;
+  background: #121212;
+  color: #fff;
+  box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2),0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12);
+  background-image: none;
+  box-sizing: border-box;
+  
+  -webkit-transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+
+  position: static;
+  
+  display:grid;
+  grid-template-columns:1fr auto;
+  grid-gap:10px;
+  
+  padding:20px 10%;
+  place-items:center left;
+}
+header span{
+  animation:heading_animation 3s infinite;
+}
+header a{
+  margin: 0;
+  color: #90caf9;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  background-image: linear-gradient(45deg, orange, purple);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-fill-color: transparent;
+  cursor: pointer;
+  border:1px solid #7d560d;
+  border-radius:20px;
+  padding:2px 10px;
+}
+#player{
+  background:radial-gradient(#222 20%,75%,rgba(0,0,0,0) 100%);
+  padding:10px 15%;
+}
+@media (max-width: 700px) {
+  header input{
+    display:none;
+  }
+  header{
+    display:grid;
+    grid-template-columns:1fr auto;
+    place-items:center left;
+
+  }
+  #player{
+    padding:0px;
+  }
+  .content{
+    padding:20px 7% !important;
+  }
+}
+.content{
+  padding:10px 15%;
+  background:none;
+}
+#streams,#options{
+  color:#BBB;
+}
+#streams h2,#options h2{
+  color: #90caf9;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  background-image: linear-gradient(45deg, orange, purple);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-fill-color: transparent;
+}
+#streams article{
+  display:grid;
+  grid-auto-flow:row;
+  grid-gap:10px;
+}
+#streams span{
+  cursor: pointer;
+  border-radius:10px;
+  background:#222;
+  padding:10px 15px;
+}
+#options article{
+  display:grid;
+  grid-auto-flow:row;
+  grid-gap:10px;
+}
+#options span{
+  cursor: pointer;
+  border-radius:10px;
+  background:#222;
+  padding:10px 15px;
+  grid-gap:10px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  place-items:center left;
+}
+#options span label{
+  background:#111;
+  border:none;
+  border-radius:5px;
+  color:#DDD;
+  padding:5px 7px;
+  margin:0px 2px;
+  cursor:pointer;
+}
+footer{
+  padding:30px 7% !important;
+  background:#090909;
+  color:#999;
+}
+footer strong{
+  color:yellowgreen;
+}
+.active{
+  border-radius: 10px;
+  border: 1px solid orange;
+  max-height: 290px;
+}
+#search{
+  display:grid;
+  grid-auto-flow:columns;
+  padding:0px 7%;
+}
+#search article{
+  display:grid;
+  grid-template-columns:1fr auto;
+  grid-gap:5px;
+  padding:20px 7%;
+}
+#search input{
+  background:#222222;
+  padding:5px 10px;
+  border:1px solid #555;
+  border-radius:20px;
+  text-align:left;
+  color:#999;
+}
+#search button{
+  border-radius:20px;
+  padding:5px 20px;
+  border:none;
+}
+#search-results{
+  display:grid;
+  grid-auto-flow:columns;
+  grid-gap:5px;
+  padding:0px 5%;
+}
+.search-card{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  background:#222;
+  padding:10px;
+  grid-gap:10px;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+.search-card img{
+  border-radius:10px;
+  aspect-ratio:1/1;
+  max-width:100px;
+}
+#search-results span{
+  color:#ddd;
+  text-align:center;
+}
+.search-card h5{
+  color:#DDD;
+  font-size:1em;
+  margin:0px;
+  text-align:left;
+}
+.search-card h6{
+  color:#111;
+  margin:10px 0px;
+  background:yellowgreen;
+  display:inline-block;
+  border-radius:10px;
+  padding:0px 5px;
+  text-align:left;
+}
+.search-card p{
+  color:#AAA;
+  margin:0px;
+  text-align:left;
+  font-size:0.8em;
+}
+.unavailable{
+  opacity:0.3;
+  cursor:not-allowed !important;
+}
+.radio-select {
+  display: none;
+}
+
+.radio-select:checked + .label-select {
+  background-color: orange !important;
+  color:#111 !important;
+}
+
+    </style>
+
+  </head>
+  <body>
+    <header>
+      <span>CoolMovies</span>
+      <a onclick="searchToggle()">🔍 Search</a>
+    </header>
+    <main>
+      <section>
+        <section id="searchBox">
+            <div>
+              <form data-open='closed' id="search" method="get" onsubmit="event.preventDefault();search(); return false;">
+                <div id="search-results">
+              </form>
+            </div>
+            </div>
+        </section>
+      </section>
+      <section id="player">
+        <video id="video" style="aspect-ratio:16/9" src="" controls width=100%>
+          <track label="English" kind="subtitles" srclang="en" src="https://api-vidsrc-rouge.vercel.app/subs?url=https://dl.opensubtitles.org/en/download/src-api/vrf-19e10c58/filead/1955867240.gz" default>
+        </video>
+      </section>
+      <section id="options" class="content">
+        <h2>Options:</h2>
+        <article>
+          <span>Video <div id="videoRes"><label>Default</label></div></span>
+          <span>Audio <div id="audioTracks"><label>Default</label></div></span>
+        </article>
+      </section>
+      <section id="streams" class="content">
+        <h2>Choose a server:</h2>
+        <article>
+          <span class="active">Vidsrc PRO</span>
+          <span>Filemoon</span>
+          <span class="unavailable">Bucketstream</span>
+          <span class="unavailable">UpCloud</span>
+          <span>Superembed</span>
+          <span>Vidsrc.me</span>
+          <span>Vidsrc.me</span>
+        </article>
+      </section>
+      <section id="streams" class="content">
+      </section>
+    </main>
+    <footer>
+      <strong>
+        About
+      </strong>
+      <br>This website is made for educational pourpouses only and only contain contents that are scrapped from other websites,none of its contents are stored in this website.
+    </footer>
+        <script>
+const hls = new Hls();
+function searchToggle(){
+  element = document.getElementById('search');
+  if (element.getAttribute('data-open')=='closed'){
+    searchElement= `
+    <article>
+      <input type="text" id="q_field" placeholder="e.g. John Wick" oninput="search();">
+      <button onclick="searchToggle()">close</button>
+    </article>
+    <div id="search-results">
+    `
+    
+    element.innerHTML = searchElement
+    element.setAttribute('data-open','opened');
+    inp = document.getElementById('q_field');
+    inp.focus()
+  }
+  else{
+    element.innerHTML = ''
+    element.setAttribute('data-open','closed');
+  }
+  
+}
+function search() {
+  let q = document.querySelector("#q_field").value;
+  q = q.replaceAll(" ", "_");
+  const results_list = document.querySelector("#search-results");
+  jQuery.ajax({
+    url: `https://sg.media-imdb.com/suggests/f/${q}.json`,
+    dataType: 'jsonp',
+    cache: true,
+    jsonp: false,
+    jsonpCallback: `imdb$${q}`
+  }).then(function (results) {
+      results_list.innerHTML = "<span>No results matching your query!</span>";
+      for (let item in results.d) {
+        item = results.d[item];
+          if (item.id.slice(0, 2) === 'tt') {
+            add_result(item);
+          }
+      }
+  });
+}
+function add_result(item) {
+  const results = document.querySelector("#search-results");
+  if (results.innerHTML === "<span>No results matching your query!</span>") {
+    results.innerHTML = "";
+  };
+  const card = document.createElement("div");
+  card.classList.add("search-card");
+  card.style.cursor = "pointer";
+
+  const card_body = document.createElement("div");
+  card_body.classList.add("card-body");
+
+  const card_image = document.createElement("img");
+  card_image.src = item.i;
+  card_image.setAttribute('height',"100%");
+  card_image.setAttribute('width',"100%");
+
+  const card_title = document.createElement("h5");
+  card_title.classList.add("card-title");
+  card_title.innerHTML = item.l + ` (${item.y})`;
+
+  const card_type = document.createElement("h6");
+  card_type.classList.add("card-title-secondary");
+  card_type.innerHTML = item.q === "feature" ? "Movie" : item.q;
+
+  const card_text = document.createElement("p");
+  card_text.classList.add("card-text");
+  card_text.innerHTML = item.s;
+
+  const card_id = document.createElement("p");
+  card_id.classList.add("card-link");
+  card_id.innerHTML = `IMDb ID: ${item.id}`;
+
+  card.appendChild(card_image);
+  card_body.appendChild(card_title);
+  card_body.appendChild(card_type);
+  card_body.appendChild(card_text);
+  card_body.appendChild(card_id);
+
+  card.appendChild(card_body);
+
+  card.addEventListener("click", function () {
+      searchToggle()
+      window.location.assign('https://youtube.com');
+  });
+  results.appendChild(card);
+}
+function addAudioTracks(tracks) {
+  const results = document.querySelector("#audioTracks");
+  if (results.innerHTML != "") {
+    results.innerHTML = "";
+  }
+  for (var i = 0; i < tracks.length; i++) {
+  var audioTrack = tracks[i];
+  var itemBtn = document.createElement('label');
+  var itemBtnR = document.createElement('input');
+  itemBtnR.id=`AudioItem${i}`;
+  itemBtn.setAttribute('for',`AudioItem${i}`)
+  itemBtnR.setAttribute('type','radio');
+  itemBtnR.setAttribute('name','audioButtonGroup');
+  itemBtnR.setAttribute('class','radio-select');
+  itemBtn.setAttribute('class','label-select');
+  itemBtn.setAttribute('onclick', `hls.audioTrack=${i}`);
+  itemBtn.innerText = audioTrack.lang;
+  results.appendChild(itemBtnR);
+  results.appendChild(itemBtn);
+  }
+}
+function addVideoTracks(tracks) {
+  const results = document.querySelector("#videoRes");
+  if (results.innerHTML != "") {
+    results.innerHTML = "";
+  }
+  for (var i = 0; i < tracks.length; i++) {
+  var videoTrack = tracks[i];
+  var itemBtn = document.createElement('label');
+  var itemBtnR = document.createElement('input');
+  itemBtnR.id=`VideoItem${i}`;
+  itemBtn.setAttribute('for',`VideoItem${i}`)
+  itemBtnR.setAttribute('type','radio');
+  itemBtnR.setAttribute('name','videoButtonGroup');
+  itemBtnR.setAttribute('class','radio-select');
+  itemBtn.setAttribute('class','label-select');
+  itemBtn.setAttribute('onclick', `hls.currentLevel = ${i}`);
+  itemBtn.innerText = videoTrack;
+  results.appendChild(itemBtnR);
+  results.appendChild(itemBtn);
+  }
+}
+function play(hls) {
+  var video = document.querySelector('#video');
+  if (Hls.isSupported()) {
+    hls.loadSource('https://s3.putgate.org/cdn/H4sIAAAAAAAAAwXB226DIAAA0F.CVYxZsodZpLUTXLWI441LCQF0bbP0wtfvHFdVqtIFRMCVyCJkwJsuXWUcOgPj1PldLr7VXF7kvgVjqqkg7MrjZdHC42keirEhwJCEOxBfdvNZ0JNfVdMCk2umI.r4hszH1ROOCRnj4coE_FZRbkVoX2L3HFSoGx3sLFPNzOIhDbIbMr8xOCmLU8myf35lepO5uffYl9NM0ggPKz2Zot.R0PPfB13gn93_fPwDs0PNtM0AAAA-/list.m3u8');
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+      const videoResolutions = data.levels.map(level => level.height + 'p');
+      console.log("Manifest parsed");
+      addVideoTracks(videoResolutions);
+    });
+
+    hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, function(event, data) {
+      var audioTracks = hls.audioTracks;
+      addAudioTracks(hls.audioTracks);
+    });
+
+    hls.on(Hls.Events.ERROR, function(event, data) {
+      console.error("HLS error:", data);
+    });
+
+    hls.startLoad();
+  }
+
+  plyr.setup(video);
+}
+play(hls);
+    </script>
+  </body>
+</html>
